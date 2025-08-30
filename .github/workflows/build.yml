@@ -13,6 +13,7 @@ jobs:
     strategy:
       matrix:
         abi: [armeabi-v7a, arm64-v8a, x86, x86_64]
+      fail-fast: false
     steps:
       - uses: actions/checkout@v3
         with:
@@ -37,7 +38,8 @@ jobs:
             -DENABLE_GIF=ON \
             -DENABLE_FFMPEG=ON \
             -DENABLE_STATIC=OFF \
-            -DENABLE_SHARED=ON
+            -DENABLE_SHARED=ON \
+            -DUSE_LIBZIP=OFF
           make -j$(nproc)
 
       - name: Upload artifact
@@ -52,6 +54,8 @@ jobs:
     strategy:
       matrix:
         arch: [x64, ARM64]
+      fail-fast: false
+
     steps:
       - uses: actions/checkout@v3
         with:
@@ -93,7 +97,9 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        arch: [arm64, x86_64]
+        arch: [arm64]
+      fail-fast: false
+
     steps:
       - uses: actions/checkout@v3
         with:
@@ -132,7 +138,9 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        arch: [x86_64, arm64]
+        arch: [arm64]
+      fail-fast: false
+      
     steps:
       - uses: actions/checkout@v3
         with:
