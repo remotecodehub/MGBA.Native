@@ -28,8 +28,7 @@ jobs:
           export PATH="$PATH:/usr/bin/ffmpeg"
           mkdir -p build/android/${{ matrix.abi }}
           cd build/android/${{ matrix.abi }}
-          cmake ../../../extern/mgba \
-            -DCMAKE_TOOLCHAIN_FILE=../../../extern/mgba/toolchains/android.toolchain.cmake \
+          cmake ../../../extern/mgba \ 
             -DANDROID_ABI=${{ matrix.abi }} \
             -DANDROID_PLATFORM=android-21 \
             -DCMAKE_BUILD_TYPE=Release \
@@ -138,7 +137,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           submodules: true
-          
+
       - name: Install dependencies
         run: brew install ffmpeg libpng zlib sqlite3 freetype libzip libelf
 
