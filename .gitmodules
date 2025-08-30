@@ -1,3 +1,3 @@
-[submodule "extern/mgba"]
-	path = extern/mgba
+[submodule "libs/mgba"]
+	path = libs/mgba
 	url = https://github.com/mgba-emu/mgba.git

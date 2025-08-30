@@ -58,7 +58,7 @@ jobs:
         run: |
           git clone https://github.com/microsoft/vcpkg
           .\vcpkg\bootstrap-vcpkg.bat
-          .\vcpkg\vcpkg.exe install ffmpeg libpng zlib sqlite3 freetype libzip libelf --triplet x64-windows
+          .\vcpkg\vcpkg.exe install ffmpeg libpng zlib sqlite3 freetype libzip --triplet x64-windows
 
       - name: Build mGBA for ${{ matrix.arch }}
         run: |
