@@ -1,0 +1,160 @@
+name: Build Native mGBA Libraries
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+
+  android:
+    name: 🟢 Android
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        abi: [armeabi-v7a, arm64-v8a, x86, x86_64]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y cmake ninja-build openjdk-11-jdk ffmpeg libpng-dev zlib1g-dev libsqlite3-dev libfreetype6-dev libzip-dev libelf-dev
+
+      - name: Build mGBA for ${{ matrix.abi }}
+        run: |
+          export PATH="$PATH:/usr/bin/ffmpeg"
+          mkdir -p build/android/${{ matrix.abi }}
+          cd build/android/${{ matrix.abi }}
+          cmake ../../../libs/mgba \
+            -DCMAKE_TOOLCHAIN_FILE=../../../libs/mgba/toolchains/android.toolchain.cmake \
+            -DANDROID_ABI=${{ matrix.abi }} \
+            -DANDROID_PLATFORM=android-21 \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DENABLE_CORE=ON \
+            -DENABLE_LIBMGBA=ON \
+            -DENABLE_GIF=ON \
+            -DENABLE_FFMPEG=ON \
+            -DENABLE_STATIC=OFF \
+            -DENABLE_SHARED=ON
+          make -j$(nproc)
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: mgba-android-${{ matrix.abi }}
+          path: build/android/${{ matrix.abi }}/libmgba.*
+
+  windows:
+    name: 🪟 Windows
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        arch: [x64, ARM64]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup vcpkg
+        run: |
+          git clone https://github.com/microsoft/vcpkg
+          .\vcpkg\bootstrap-vcpkg.bat
+          .\vcpkg\vcpkg.exe install ffmpeg libpng zlib sqlite3 freetype libzip libelf --triplet x64-windows
+
+      - name: Build mGBA for ${{ matrix.arch }}
+        run: |
+          $env:PATH += ";C:\vcpkg\installed\x64-windows\bin"
+          mkdir build\windows\${{ matrix.arch }}
+          cd build\windows\${{ matrix.arch }}
+          cmake ../../../libs/mgba `
+            -G "Visual Studio 17 2022" `
+            -A ${{ matrix.arch }} `
+            -DCMAKE_TOOLCHAIN_FILE=../../../vcpkg/scripts/buildsystems/vcpkg.cmake `
+            -DCMAKE_C_FLAGS="/D _Atomic=" `
+            -DCMAKE_BUILD_TYPE=Release `
+            -DENABLE_CORE=ON `
+            -DENABLE_LIBMGBA=ON `
+            -DENABLE_GIF=ON `
+            -DENABLE_FFMPEG=ON `
+            -DENABLE_STATIC=OFF `
+            -DENABLE_SHARED=ON
+          cmake --build . --config Release
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: mgba-windows-${{ matrix.arch }}
+          path: build/windows/${{ matrix.arch }}/Release/mgba.*
+
+  ios:
+    name: 🍎 iOS
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        arch: [arm64, x86_64]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: brew install ffmpeg libpng zlib sqlite3 freetype libzip libelf
+
+      - name: Build mGBA for iOS ${{ matrix.arch }}
+        run: |
+          export PATH="$PATH:/opt/homebrew/bin"
+          mkdir -p build/ios/${{ matrix.arch }}
+          cd build/ios/${{ matrix.arch }}
+          cmake ../../../libs/mgba \
+            -DCMAKE_SYSTEM_NAME=Darwin \
+            -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} \
+            -DCMAKE_OSX_SYSROOT=iphoneos \
+            -DCMAKE_C_FLAGS="-target ${{ matrix.arch }}-apple-ios13.0" \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DENABLE_CORE=ON \
+            -DENABLE_LIBMGBA=ON \
+            -DENABLE_GIF=ON \
+            -DENABLE_FFMPEG=ON \
+            -DENABLE_STATIC=OFF \
+            -DENABLE_SHARED=ON
+          make -j$(sysctl -n hw.logicalcpu)
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: mgba-ios-${{ matrix.arch }}
+          path: build/ios/${{ matrix.arch }}/libmgba.*
+
+  macos:
+    name: 🖥️ macOS
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        arch: [x86_64, arm64]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: brew install ffmpeg libpng zlib sqlite3 freetype libzip libelf
+
+      - name: Build mGBA for macOS ${{ matrix.arch }}
+        run: |
+          export PATH="$PATH:/opt/homebrew/bin"
+          mkdir -p build/macos/${{ matrix.arch }}
+          cd build/macos/${{ matrix.arch }}
+          cmake ../../../libs/mgba \
+            -DCMAKE_SYSTEM_NAME=Darwin \
+            -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} \
+            -DCMAKE_OSX_SYSROOT=macosx \
+            -DCMAKE_C_FLAGS="-target ${{ matrix.arch }}-apple-macos13.0" \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DENABLE_CORE=ON \
+            -DENABLE_LIBMGBA=ON \
+            -DENABLE_GIF=ON \
+            -DENABLE_FFMPEG=ON \
+            -DENABLE_STATIC=OFF \
+            -DENABLE_SHARED=ON
+          make -j$(sysctl -n hw.logicalcpu)
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: mgba-macos-${{ matrix.arch }}
+          path: build/macos/${{ matrix.arch }}/libmgba.*
