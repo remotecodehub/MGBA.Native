@@ -40,7 +40,7 @@ jobs:
           make -j$(nproc)
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: mgba-android-${{ matrix.abi }}
           path: build/android/${{ matrix.abi }}/libmgba.*
@@ -80,7 +80,7 @@ jobs:
           cmake --build . --config Release
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: mgba-windows-${{ matrix.arch }}
           path: build/windows/${{ matrix.arch }}/Release/mgba.*
@@ -117,7 +117,7 @@ jobs:
           make -j$(sysctl -n hw.logicalcpu)
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: mgba-ios-${{ matrix.arch }}
           path: build/ios/${{ matrix.arch }}/libmgba.*
@@ -154,7 +154,7 @@ jobs:
           make -j$(sysctl -n hw.logicalcpu)
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: mgba-macos-${{ matrix.arch }}
           path: build/macos/${{ matrix.arch }}/libmgba.*
