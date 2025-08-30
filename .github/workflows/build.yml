@@ -15,6 +15,8 @@ jobs:
         abi: [armeabi-v7a, arm64-v8a, x86, x86_64]
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: true
 
       - name: Install dependencies
         run: |
@@ -53,6 +55,8 @@ jobs:
         arch: [x64, ARM64]
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: true
 
       - name: Setup vcpkg
         run: |
@@ -93,6 +97,8 @@ jobs:
         arch: [arm64, x86_64]
     steps:
       - uses: actions/checkout@v3
+        with:
+          submodules: true
 
       - name: Install dependencies
         run: brew install ffmpeg libpng zlib sqlite3 freetype libzip libelf
@@ -130,7 +136,9 @@ jobs:
         arch: [x86_64, arm64]
     steps:
       - uses: actions/checkout@v3
-
+        with:
+          submodules: true
+          
       - name: Install dependencies
         run: brew install ffmpeg libpng zlib sqlite3 freetype libzip libelf
 
