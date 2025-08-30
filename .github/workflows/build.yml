@@ -26,8 +26,8 @@ jobs:
           export PATH="$PATH:/usr/bin/ffmpeg"
           mkdir -p build/android/${{ matrix.abi }}
           cd build/android/${{ matrix.abi }}
-          cmake ../../../libs/mgba \
-            -DCMAKE_TOOLCHAIN_FILE=../../../libs/mgba/toolchains/android.toolchain.cmake \
+          cmake ../../../extern/mgba \
+            -DCMAKE_TOOLCHAIN_FILE=../../../extern/mgba/toolchains/android.toolchain.cmake \
             -DANDROID_ABI=${{ matrix.abi }} \
             -DANDROID_PLATFORM=android-21 \
             -DCMAKE_BUILD_TYPE=Release \
@@ -65,7 +65,7 @@ jobs:
           $env:PATH += ";C:\vcpkg\installed\x64-windows\bin"
           mkdir build\windows\${{ matrix.arch }}
           cd build\windows\${{ matrix.arch }}
-          cmake ../../../libs/mgba `
+          cmake ../../../extern/mgba `
             -G "Visual Studio 17 2022" `
             -A ${{ matrix.arch }} `
             -DCMAKE_TOOLCHAIN_FILE=../../../vcpkg/scripts/buildsystems/vcpkg.cmake `
@@ -102,7 +102,7 @@ jobs:
           export PATH="$PATH:/opt/homebrew/bin"
           mkdir -p build/ios/${{ matrix.arch }}
           cd build/ios/${{ matrix.arch }}
-          cmake ../../../libs/mgba \
+          cmake ../../../extern/mgba \
             -DCMAKE_SYSTEM_NAME=Darwin \
             -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} \
             -DCMAKE_OSX_SYSROOT=iphoneos \
@@ -139,7 +139,7 @@ jobs:
           export PATH="$PATH:/opt/homebrew/bin"
           mkdir -p build/macos/${{ matrix.arch }}
           cd build/macos/${{ matrix.arch }}
-          cmake ../../../libs/mgba \
+          cmake ../../../extern/mgba \
             -DCMAKE_SYSTEM_NAME=Darwin \
             -DCMAKE_OSX_ARCHITECTURES=${{ matrix.arch }} \
             -DCMAKE_OSX_SYSROOT=macosx \
